@@ -1,0 +1,77 @@
+//
+//  ViewController.swift
+//  Project1
+//
+//  Created by Alexander Ha on 9/16/20.
+//  Copyright © 2020 Alexander Ha. All rights reserved.
+//
+
+import UIKit
+
+class ViewController: UITableViewController {
+    
+    var pictures = [String]()
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        title = "Storm Viewer"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(recommendTapped))
+        
+        performSelector(inBackground: #selector(loadPictures), with: nil)
+        
+        tableView.performSelector(onMainThread: #selector(UITableView.reloadData), with: nil, waitUntilDone: false)
+        
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return pictures.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Picture", for: indexPath)
+       
+        cell.accessoryType = .disclosureIndicator
+        cell.textLabel?.text = pictures[indexPath.row]
+        cell.textLabel?.font = UIFont.systemFont(ofSize: 25)
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let vc = storyboard?.instantiateViewController(identifier: "Detail") as? DetailViewController {
+            vc.selectedImage = pictures[indexPath.row]
+            vc.selectedImageNumber = indexPath.row + 1
+            vc.totalImages = pictures.count
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    @objc func recommendTapped() {
+        
+        let shareLink = "https://artisticscoreengraving.wordpress.com/2019/02/23/hacking-with-swift-challenge-3/"
+        
+        let vc = UIActivityViewController(activityItems: [shareLink], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
+    }
+    
+    @objc func loadPictures() {
+        
+        let fm = FileManager.default
+        let path = Bundle.main.resourcePath!
+        let items = try! fm.contentsOfDirectory(atPath: path)
+        
+        for item in items {
+            if item.hasPrefix("nssl") {
+                pictures.append(item)
+            }
+            pictures = pictures.sorted()
+        }
+    }
+    
+    
+    
+}
+
