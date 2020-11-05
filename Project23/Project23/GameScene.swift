@@ -6,8 +6,11 @@
 //
 
 import SpriteKit
+import AVFoundation
 
 class GameScene: SKScene {
+    
+    //MARK: - Properties
     
     //score tracker
     var gameScore: SKLabelNode!
@@ -25,6 +28,15 @@ class GameScene: SKScene {
     var activeSliceBG: SKShapeNode!
     var activeSliceFG: SKShapeNode!
     var activeSlicePoints = [CGPoint]()
+    
+    //sound properties
+    var isSwooshSoundActive = false
+    var bombSoundEffect: AVAudioPlayer?
+    
+    //enemy properties
+    var activeEnemies = [SKSpriteNode]()
+    
+    //MARK: - Scene
     
     override func didMove(to view: SKView) {
         
@@ -44,6 +56,26 @@ class GameScene: SKScene {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
+        guard let touch = touches.first else { return }
+        
+        //remove all existing points in activeSlicePoints array while keeping its storage space
+        activeSlicePoints.removeAll(keepingCapacity: true)
+        
+        //get the touch location and add it to the activeSlicePoints array.
+        let location = touch.location(in: self)
+        activeSlicePoints.append(location)
+        
+        //call the redrawActiveSlice() method to clear the slice shapes
+        redrawActiveSlice()
+        
+        //remove actions attached to the current slice shapes.
+        activeSliceFG.removeAllActions()
+        activeSliceBG.removeAllActions()
+        
+        //set both slice shapes to be fully visible
+        activeSliceFG.alpha = 1
+        activeSliceBG.alpha = 1
+        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -54,6 +86,10 @@ class GameScene: SKScene {
         activeSlicePoints.append(location)
         
         redrawActiveSlice()
+        
+        if !isSwooshSoundActive {
+            playSwooshSound()
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -65,8 +101,47 @@ class GameScene: SKScene {
     
     
     func redrawActiveSlice() {
+        //array must have more than 2 points to draw a shape, will exit method if it has less than 2
+        if activeSlicePoints.count < 2 {
+            activeSliceBG.path = nil
+            activeSliceFG.path = nil
+            return
+        }
+        
+        //if we have more then 12 points in our array, we will remove the oldest ones until we have 12
+        if activeSlicePoints.count > 12 {
+            activeSlicePoints.removeFirst(activeSlicePoints.count - 12)
+        }
+        
+        //starts the line at first point then loop through each of the other points to continue line path
+        let path = UIBezierPath()
+        path.move(to: activeSlicePoints[0])
+        
+        for i in 1..<activeSlicePoints.count {
+            path.addLine(to: activeSlicePoints[i])
+        }
+        
+        //updates the paths with our design
+        activeSliceBG.path = path.cgPath
+        activeSliceFG.path = path.cgPath
+    }
+    
+    func playSwooshSound() {
+        
+        isSwooshSoundActive = true
+        //plays 1 of 3 sound effects
+        let randomNumber = Int.random(in: 1...3)
+        let soundName = "swoosh\(randomNumber).caf"
+        
+        let swooshSound = SKAction.playSoundFileNamed(soundName, waitForCompletion: true)
+        
+        run(swooshSound) { [weak self] in
+            self?.isSwooshSoundActive = false
+        }
         
     }
+    
+    
     //MARK: - Initial Setup Methods
     
     func createScore() {
@@ -110,6 +185,68 @@ class GameScene: SKScene {
         
         addChild(activeSliceBG)
         addChild(activeSliceFG)
+        
+    }
+    
+    func createEnemy(forceBomb: ForceBomb = .random) {
+        
+        let enemy: SKSpriteNode
+        var enemyType = Int.random(in: 0...6)
+        
+        //decides whether to force bomb and chooses the enemy type
+        if forceBomb == .never {
+            enemyType = 1
+        } else if forceBomb == .always {
+            enemyType = 0
+        }
+        
+        //decides what enemy to create once enemy type is determined
+        if enemyType == 0 {
+            // 1: new spriteNode that will hold fuse and bomb image as children
+            enemy = SKSpriteNode()
+            enemy.zPosition = 1
+            enemy.name = "bombContainer"
+            
+            // 2:
+            
+        } else {
+            enemy = SKSpriteNode(imageNamed: "penguin")
+            run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
+            enemy.name = "enemy"
+        }
+        
+        //give random position off the bottom edge of the screen
+        let randomPosition = CGPoint(x: Int.random(in: 64...960), y: -128)
+        enemy.position = randomPosition
+        
+        //random angular velocity
+        let randomAngularVelocity = CGFloat.random(in: -3...3)
+        
+        //random X velocity
+        let randomXVelocity: Int
+        if randomPosition.x < 256 {
+            randomXVelocity = Int.random(in: 8...15)
+        } else if randomPosition.x < 512 {
+            randomXVelocity = Int.random(in: 3...5)
+        } else if randomPosition.x < 768 {
+            randomXVelocity = Int.random(in: 3...5)
+        } else {
+            randomXVelocity = Int.random(in: 24...32)
+        }
+        
+        //random Y velocity
+        let randomYVelocity = Int.random(in: 24...32)
+        
+        //gives all enemies a circular physics body where they do not collide
+        enemy.physicsBody = SKPhysicsBody(circleOfRadius: 64)
+        enemy.physicsBody?.angularVelocity = randomAngularVelocity
+        enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity * 40, dy: randomYVelocity * 40)
+        enemy.physicsBody?.collisionBitMask = 0
+        
+    
+        //adds enemy to scene and appends to activeEnemies array
+        addChild(enemy)
+        activeEnemies.append(enemy)
         
     }
     
