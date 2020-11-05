@@ -16,6 +16,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WYl-ee-QqT">
+                                <rect key="frame" x="75.5" y="325" width="263" height="256"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="UNKNOWN" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0b1-8U-s2n">
                                 <rect key="frame" x="111.5" y="429" width="191.5" height="48"/>
                                 <fontDescription key="fontDescription" type="system" weight="thin" pointSize="40"/>
@@ -28,9 +32,14 @@
                         <constraints>
                             <constraint firstItem="0b1-8U-s2n" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="1vc-yy-7o7"/>
                             <constraint firstItem="0b1-8U-s2n" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="CiY-Gz-qa6"/>
+                            <constraint firstItem="WYl-ee-QqT" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="DwV-0w-R3t"/>
+                            <constraint firstItem="WYl-ee-QqT" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="75.5" id="h0o-6x-hpU"/>
+                            <constraint firstItem="WYl-ee-QqT" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="281" id="uf8-ny-yTk"/>
+                            <constraint firstItem="WYl-ee-QqT" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="vtZ-ib-BNA"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="circle" destination="WYl-ee-QqT" id="BSW-4F-ows"/>
                         <outlet property="distanceReading" destination="0b1-8U-s2n" id="Jgq-fw-kyt"/>
                     </connections>
                 </viewController>
