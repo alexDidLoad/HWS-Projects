@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		119B65E62553A531005FE4DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119B65E52553A531005FE4DF /* AppDelegate.swift */; };
 		119B65EA2553A531005FE4DF /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 119B65E92553A531005FE4DF /* Actions.sks */; };
-		119B65EC2553A531005FE4DF /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119B65EB2553A531005FE4DF /* GameScene.swift */; };
 		119B65EE2553A531005FE4DF /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119B65ED2553A531005FE4DF /* GameViewController.swift */; };
 		119B65F12553A531005FE4DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 119B65EF2553A531005FE4DF /* Main.storyboard */; };
 		119B65F32553A532005FE4DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 119B65F22553A532005FE4DF /* Assets.xcassets */; };
@@ -26,13 +25,13 @@
 		119B66102553A67E005FE4DF /* sliceFuse.sks in Resources */ = {isa = PBXBuildFile; fileRef = 119B66052553A67E005FE4DF /* sliceFuse.sks */; };
 		119B66172553A72D005FE4DF /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 119B66162553A72D005FE4DF /* GameScene.sks */; };
 		119B661A2553D4FB005FE4DF /* EnemyEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119B66192553D4FB005FE4DF /* EnemyEnums.swift */; };
+		119B664C2553EC3D005FE4DF /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119B664B2553EC3D005FE4DF /* GameScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		119B65E22553A531005FE4DF /* Project23.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Project23.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		119B65E52553A531005FE4DF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		119B65E92553A531005FE4DF /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
-		119B65EB2553A531005FE4DF /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		119B65ED2553A531005FE4DF /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		119B65F02553A531005FE4DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		119B65F22553A532005FE4DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -50,6 +49,7 @@
 		119B66052553A67E005FE4DF /* sliceFuse.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = sliceFuse.sks; sourceTree = "<group>"; };
 		119B66162553A72D005FE4DF /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		119B66192553D4FB005FE4DF /* EnemyEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnemyEnums.swift; sourceTree = "<group>"; };
+		119B664B2553EC3D005FE4DF /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,10 +83,10 @@
 			isa = PBXGroup;
 			children = (
 				119B65E52553A531005FE4DF /* AppDelegate.swift */,
-				119B65EB2553A531005FE4DF /* GameScene.swift */,
 				119B65ED2553A531005FE4DF /* GameViewController.swift */,
 				119B65E92553A531005FE4DF /* Actions.sks */,
 				119B66162553A72D005FE4DF /* GameScene.sks */,
+				119B664B2553EC3D005FE4DF /* GameScene.swift */,
 				119B66192553D4FB005FE4DF /* EnemyEnums.swift */,
 				119B65EF2553A531005FE4DF /* Main.storyboard */,
 				119B65F22553A532005FE4DF /* Assets.xcassets */,
@@ -204,10 +204,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				119B65EC2553A531005FE4DF /* GameScene.swift in Sources */,
 				119B65EE2553A531005FE4DF /* GameViewController.swift in Sources */,
 				119B661A2553D4FB005FE4DF /* EnemyEnums.swift in Sources */,
 				119B65E62553A531005FE4DF /* AppDelegate.swift in Sources */,
+				119B664C2553EC3D005FE4DF /* GameScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
