@@ -36,6 +36,12 @@ class GameScene: SKScene {
     //enemy properties
     var activeEnemies = [SKSpriteNode]()
     
+    //name properties
+    let bombContainerString = "bombContainer"
+    let chalkDusterFont = "Chalkduster"
+    let bombString = "bomb"
+    let enemyString = "enemy"
+    
     //MARK: - Scene
     
     override func didMove(to view: SKView) {
@@ -49,7 +55,6 @@ class GameScene: SKScene {
         createLives()
         
         createSlices()
-        
     }
     
     //MARK: - Touch Methods
@@ -75,7 +80,6 @@ class GameScene: SKScene {
         //set both slice shapes to be fully visible
         activeSliceFG.alpha = 1
         activeSliceBG.alpha = 1
-        
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -93,13 +97,10 @@ class GameScene: SKScene {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
         activeSliceBG.run(SKAction.fadeOut(withDuration: 0.25))
         activeSliceFG.run(SKAction.fadeOut(withDuration: 0.25))
-        
     }
-    
-    
+
     func redrawActiveSlice() {
         //array must have more than 2 points to draw a shape, will exit method if it has less than 2
         if activeSlicePoints.count < 2 {
@@ -107,12 +108,10 @@ class GameScene: SKScene {
             activeSliceFG.path = nil
             return
         }
-        
         //if we have more then 12 points in our array, we will remove the oldest ones until we have 12
         if activeSlicePoints.count > 12 {
             activeSlicePoints.removeFirst(activeSlicePoints.count - 12)
         }
-        
         //starts the line at first point then loop through each of the other points to continue line path
         let path = UIBezierPath()
         path.move(to: activeSlicePoints[0])
@@ -120,7 +119,6 @@ class GameScene: SKScene {
         for i in 1..<activeSlicePoints.count {
             path.addLine(to: activeSlicePoints[i])
         }
-        
         //updates the paths with our design
         activeSliceBG.path = path.cgPath
         activeSliceFG.path = path.cgPath
@@ -138,7 +136,6 @@ class GameScene: SKScene {
         run(swooshSound) { [weak self] in
             self?.isSwooshSoundActive = false
         }
-        
     }
     
     
@@ -166,11 +163,9 @@ class GameScene: SKScene {
             addChild(spriteNode)
             livesImage.append(spriteNode)
         }
-        
     }
     
     func createSlices() {
-        
         activeSliceBG = SKShapeNode()
         activeSliceBG.zPosition = 2
         
@@ -185,7 +180,6 @@ class GameScene: SKScene {
         
         addChild(activeSliceBG)
         addChild(activeSliceFG)
-        
     }
     
     func createEnemy(forceBomb: ForceBomb = .random) {
@@ -202,17 +196,38 @@ class GameScene: SKScene {
         
         //decides what enemy to create once enemy type is determined
         if enemyType == 0 {
-            // 1: new spriteNode that will hold fuse and bomb image as children
+            
+            //new spriteNode that will hold fuse and bomb image as children
             enemy = SKSpriteNode()
             enemy.zPosition = 1
-            enemy.name = "bombContainer"
+            enemy.name = bombContainerString
             
-            // 2:
+            //adding bomb image and placing it inside the bombContainer
+            let bombImage = SKSpriteNode(imageNamed: "sliceBomb")
+            bombImage.name = bombString
+            enemy.addChild(bombImage)
             
+            //stops bomb fuse sound effect if there is one and destroys it
+            if bombSoundEffect != nil {
+                bombSoundEffect?.stop()
+                bombSoundEffect = nil
+            }
+            //create a new bomb fuse sound effect and plays it
+            if let path = Bundle.main.url(forResource: "sliceBombFuse", withExtension: "caf") {
+                if let sound = try? AVAudioPlayer(contentsOf: path) {
+                    bombSoundEffect = sound
+                    sound.play()
+                }
+            }
+            //create a particle emitter node and position it so that its at teh end of the bombs image's fuse
+            if let emitter = SKEmitterNode(fileNamed: "sliceFuse") {
+                emitter.position = CGPoint(x: 76, y: 64)
+                enemy.addChild(emitter)
+            }
         } else {
             enemy = SKSpriteNode(imageNamed: "penguin")
             run(SKAction.playSoundFileNamed("launch.caf", waitForCompletion: false))
-            enemy.name = "enemy"
+            enemy.name = enemyString
         }
         
         //give random position off the bottom edge of the screen
@@ -242,12 +257,10 @@ class GameScene: SKScene {
         enemy.physicsBody?.angularVelocity = randomAngularVelocity
         enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity * 40, dy: randomYVelocity * 40)
         enemy.physicsBody?.collisionBitMask = 0
-        
     
         //adds enemy to scene and appends to activeEnemies array
         addChild(enemy)
         activeEnemies.append(enemy)
-        
     }
     
     func setupBackground() {
@@ -264,4 +277,24 @@ class GameScene: SKScene {
         //lower speed at which movement occurs
         physicsWorld.speed = 0.85
     }
+    
+    //MARK: - Update method Changes
+    
+    override func update(_ currentTime: TimeInterval) {
+        var bombCount = 0
+        
+        for node in activeEnemies {
+            if node.name == bombContainerString {
+                bombCount += 1
+                break
+            }
+        }
+        
+        if bombCount == 0 {
+            bombSoundEffect?.stop()
+            bombSoundEffect = nil
+        }
+    }
+    
+//end of class
 }
