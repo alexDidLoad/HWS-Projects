@@ -35,6 +35,11 @@ class GameScene: SKScene {
     
     //enemy properties
     var activeEnemies = [SKSpriteNode]()
+    var popupTime = 0.9 //amount of time to wait between the last enemy being destroyed and a new one being created
+    var sequence = [SequenceType]() //an array of our sequence type enum that defines what enemies to create
+    var sequencePosition = 0 //describes where we are right now in the game
+    var chainDelay = 3.0 //how long to wait before creating a new enemy when the sequence type is .chain or .fastchain
+    var nextSequenceQueued = true //used so we know when all enemies are destroyed and we're ready to create more
     
     //name properties
     let bombContainerString = "bombContainer"
@@ -100,7 +105,7 @@ class GameScene: SKScene {
         activeSliceBG.run(SKAction.fadeOut(withDuration: 0.25))
         activeSliceFG.run(SKAction.fadeOut(withDuration: 0.25))
     }
-
+    
     func redrawActiveSlice() {
         //array must have more than 2 points to draw a shape, will exit method if it has less than 2
         if activeSlicePoints.count < 2 {
@@ -182,6 +187,23 @@ class GameScene: SKScene {
         addChild(activeSliceFG)
     }
     
+    func setupBackground() {
+        let background = SKSpriteNode(imageNamed: "sliceBackground")
+        background.position = CGPoint(x: 512, y: 384)
+        background.zPosition = -1
+        background.blendMode = .replace
+        addChild(background)
+    }
+    
+    func setGravity() {
+        //lower default gravity
+        physicsWorld.gravity = CGVector(dx: 0, dy: -6)
+        //lower speed at which movement occurs
+        physicsWorld.speed = 0.85
+    }
+    
+    //MARK: - Enemy methods
+    
     func createEnemy(forceBomb: ForceBomb = .random) {
         
         let enemy: SKSpriteNode
@@ -257,28 +279,79 @@ class GameScene: SKScene {
         enemy.physicsBody?.angularVelocity = randomAngularVelocity
         enemy.physicsBody?.velocity = CGVector(dx: randomXVelocity * 40, dy: randomYVelocity * 40)
         enemy.physicsBody?.collisionBitMask = 0
-    
+        
         //adds enemy to scene and appends to activeEnemies array
         addChild(enemy)
         activeEnemies.append(enemy)
     }
     
-    func setupBackground() {
-        let background = SKSpriteNode(imageNamed: "sliceBackground")
-        background.position = CGPoint(x: 512, y: 384)
-        background.zPosition = -1
-        background.blendMode = .replace
-        addChild(background)
+    func tossEnemies() {
+        
+        popupTime *= 0.991
+        chainDelay *= 0.99
+        physicsWorld.speed *= 1.02
+        
+        let sequenceType = sequence[sequencePosition]
+        
+        switch sequenceType {
+        
+        case .oneNoBomb:
+            createEnemy(forceBomb: .never)
+            
+        case .one:
+            createEnemy()
+            
+        case .twoWithBomb:
+            createEnemy(forceBomb: .always)
+            createEnemy(forceBomb: .always)
+
+        case .two:
+            createEnemy(forceBomb: .never)
+            createEnemy(forceBomb: .always)
+            
+        case .three:
+            createEnemy()
+            createEnemy()
+            createEnemy()
+            
+        case .four:
+            createEnemy()
+            createEnemy()
+            createEnemy()
+            createEnemy()
+            
+        case .chain:
+            createEnemy()
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 5.0)) { [weak self] in self?.createEnemy() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 5.0 * 2)) { [weak self] in self?.createEnemy() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 5.0 * 3)) { [weak self] in self?.createEnemy() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 5.0 * 4)) { [weak self] in self?.createEnemy() }
+            
+        case .fastChain:
+            createEnemy()
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 10.0)) { [weak self] in self?.createEnemy() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 10.0 * 2)) { [weak self] in self?.createEnemy() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 10.0 * 3)) { [weak self] in self?.createEnemy() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + (chainDelay / 10.0 * 4)) { [weak self] in self?.createEnemy() }
+        }
+
+        sequencePosition += 1
+        nextSequenceQueued = false
     }
     
-    func setGravity() {
-        //lower default gravity
-        physicsWorld.gravity = CGVector(dx: 0, dy: -6)
-        //lower speed at which movement occurs
-        physicsWorld.speed = 0.85
+    func gameStart() {
+        
+        sequence = [.oneNoBomb, .oneNoBomb, .twoWithBomb, .twoWithBomb, .three, .one, .chain]
+        
+        for _ in 0...1000 {
+            if let nextSequence = SequenceType.allCases.randomElement() {
+                sequence.append(nextSequence)
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in self?.tossEnemies() }
     }
     
-    //MARK: - Update method Changes
+        //MARK: - Update method Changes
     
     override func update(_ currentTime: TimeInterval) {
         var bombCount = 0
@@ -296,6 +369,6 @@ class GameScene: SKScene {
         }
     }
     
-//end of class
+    //end of class
 }
 

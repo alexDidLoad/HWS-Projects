@@ -132,8 +132,8 @@
 		119B66542553F004005FE4DF /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				119B65ED2553A531005FE4DF /* GameViewController.swift */,
 				119B664B2553EC3D005FE4DF /* GameScene.swift */,
+				119B65ED2553A531005FE4DF /* GameViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
