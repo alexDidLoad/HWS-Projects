@@ -9,43 +9,65 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    //score tracker
     var gameScore: SKLabelNode!
     var score = 0 {
         didSet {
             gameScore.text = "Score \(score)"
         }
     }
+    
+    //lives
     var livesImage = [SKSpriteNode]()
     var lives = 3
-
+    
+    //slice properties
     var activeSliceBG: SKShapeNode!
     var activeSliceFG: SKShapeNode!
+    var activeSlicePoints = [CGPoint]()
     
     override func didMove(to view: SKView) {
         
-        let background = SKSpriteNode(imageNamed: "sliceBackground")
-        background.position = CGPoint(x: 512, y: 384)
-        background.zPosition = -1
-        background.blendMode = .replace
-        addChild(background)
+        setupBackground()
         
-        //lower default gravity
-        physicsWorld.gravity = CGVector(dx: 0, dy: -6)
-        //lower speed at which movement occurs
-        physicsWorld.speed = 0.85
+        setGravity()
         
         createScore()
+        
         createLives()
+        
         createSlices()
         
-       
     }
     
+    //MARK: - Touch Methods
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
     }
     
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        guard let touch = touches.first else { return }
+        
+        let location = touch.location(in: self)
+        activeSlicePoints.append(location)
+        
+        redrawActiveSlice()
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        activeSliceBG.run(SKAction.fadeOut(withDuration: 0.25))
+        activeSliceFG.run(SKAction.fadeOut(withDuration: 0.25))
+        
+    }
+    
+    
+    func redrawActiveSlice() {
+        
+    }
+    //MARK: - Initial Setup Methods
     
     func createScore() {
         
@@ -90,5 +112,19 @@ class GameScene: SKScene {
         addChild(activeSliceFG)
         
     }
-  
+    
+    func setupBackground() {
+        let background = SKSpriteNode(imageNamed: "sliceBackground")
+        background.position = CGPoint(x: 512, y: 384)
+        background.zPosition = -1
+        background.blendMode = .replace
+        addChild(background)
+    }
+    
+    func setGravity() {
+        //lower default gravity
+        physicsWorld.gravity = CGVector(dx: 0, dy: -6)
+        //lower speed at which movement occurs
+        physicsWorld.speed = 0.85
+    }
 }
