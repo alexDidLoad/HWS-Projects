@@ -83,11 +83,9 @@
 			isa = PBXGroup;
 			children = (
 				119B65E52553A531005FE4DF /* AppDelegate.swift */,
-				119B65ED2553A531005FE4DF /* GameViewController.swift */,
-				119B65E92553A531005FE4DF /* Actions.sks */,
-				119B66162553A72D005FE4DF /* GameScene.sks */,
-				119B664B2553EC3D005FE4DF /* GameScene.swift */,
-				119B66192553D4FB005FE4DF /* EnemyEnums.swift */,
+				119B66562553F00D005FE4DF /* Model */,
+				119B66532553EFF3005FE4DF /* View */,
+				119B66542553F004005FE4DF /* Controller */,
 				119B65EF2553A531005FE4DF /* Main.storyboard */,
 				119B65F22553A532005FE4DF /* Assets.xcassets */,
 				119B65F42553A532005FE4DF /* Info.plist */,
@@ -120,6 +118,32 @@
 				119B66032553A67E005FE4DF /* sliceHitEnemy.sks */,
 			);
 			path = "SKS files";
+			sourceTree = "<group>";
+		};
+		119B66532553EFF3005FE4DF /* View */ = {
+			isa = PBXGroup;
+			children = (
+				119B65E92553A531005FE4DF /* Actions.sks */,
+				119B66162553A72D005FE4DF /* GameScene.sks */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		119B66542553F004005FE4DF /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				119B65ED2553A531005FE4DF /* GameViewController.swift */,
+				119B664B2553EC3D005FE4DF /* GameScene.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		119B66562553F00D005FE4DF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				119B66192553D4FB005FE4DF /* EnemyEnums.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
