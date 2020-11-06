@@ -267,6 +267,30 @@ class GameScene: SKScene {
         physicsWorld.speed = 0.85
     }
     
+    func subtractLife() {
+        
+        lives -= 1
+        
+        run(SKAction.playSoundFileNamed("wrong.caf", waitForCompletion: false))
+        
+        var life: SKSpriteNode
+        
+        if lives == 2 {
+            life = livesImage[0]
+        } else if lives == 1 {
+            life = livesImage[1]
+        } else {
+            life = livesImage[3]
+            endGame(triggeredByBomb: false)
+        }
+        
+        life.texture = SKTexture(imageNamed: "sliceLifeGone")
+        
+        life.xScale = 1.3
+        life.yScale = 1.3
+        life.run(SKAction.scale(to: 1, duration: 0.1))
+    }
+    
     //MARK: - Enemy methods
     
     func createEnemy(forceBomb: ForceBomb = .random) {
@@ -424,8 +448,17 @@ class GameScene: SKScene {
         if activeEnemies.count > 0 {
             for (index, node) in activeEnemies.enumerated().reversed() {
                 if node.position.y < -140 {
-                    node.removeFromParent()
-                    activeEnemies.remove(at: index)
+                    node.removeAllActions()
+                    if node.name == enemyString {
+                        node.name = ""
+                        subtractLife()
+                        node.removeFromParent()
+                        activeEnemies.remove(at: index)
+                    } else if node.name == bombContainerString {
+                        node.name = ""
+                        node.removeFromParent()
+                        activeEnemies.remove(at: index)
+                    }
                 }
             }
         } else {
