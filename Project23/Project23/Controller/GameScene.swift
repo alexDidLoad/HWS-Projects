@@ -60,6 +60,10 @@ class GameScene: SKScene {
         createLives()
         
         createSlices()
+        
+        gameStart()
+        
+        
     }
     
     //MARK: - Touch Methods
@@ -355,6 +359,20 @@ class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         var bombCount = 0
+        
+        if activeEnemies.count > 0 {
+            for (index, node) in activeEnemies.enumerated().reversed() {
+                if node.position.y < -140 {
+                    node.removeFromParent()
+                    activeEnemies.remove(at: index)
+                }
+            }
+        } else {
+            if !nextSequenceQueued {
+                DispatchQueue.main.asyncAfter(deadline: .now() + popupTime) { [weak self] in self?.tossEnemies() }
+                nextSequenceQueued = true
+            }
+        }
         
         for node in activeEnemies {
             if node.name == bombContainerString {
