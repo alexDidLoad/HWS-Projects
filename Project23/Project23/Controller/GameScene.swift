@@ -103,6 +103,46 @@ class GameScene: SKScene {
         if !isSwooshSoundActive {
             playSwooshSound()
         }
+        
+        let nodesAtPoint = nodes(at: location)
+        
+        for case let node as SKSpriteNode in nodesAtPoint {
+            if node.name == "enemy" {
+                //Create a particle effect over the penguin
+                if let emitter = SKEmitterNode(fileNamed: "sliceHitEnemy") {
+                    emitter.position = node.position
+                    addChild(emitter)
+                }
+                //Clear its node name so that it cant be swiped repeatedly
+                node.name = ""
+                
+                //Disable the isDynamic of its physics body so that it cannot carry on falling.
+                node.physicsBody?.isDynamic = false
+                
+                //Make the penguin scale out and fade out at the same time.
+                let scaleOut = SKAction.scale(to: 0.001, duration: 0.2)
+                let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+                let actionGroup = SKAction.group([scaleOut, fadeOut])
+                
+                //remove the penguin from the scene
+                let seq = SKAction.sequence([actionGroup, .removeFromParent()])
+                node.run(seq)
+                
+                //add one to the player score
+                score += 1
+                
+                //remove the penguin from activeEnemies array
+                if let index = activeEnemies.firstIndex(of: node) {
+                    activeEnemies.remove(at: index)
+                }
+                //play a sound so the player knows they hit a penguin
+                run(SKAction.playSoundFileNamed("whack.caf", waitForCompletion: false))
+                
+            } else if node.name == "bomb" {
+                //destroy bomb
+            }
+        }
+        
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -152,7 +192,7 @@ class GameScene: SKScene {
     
     func createScore() {
         
-        gameScore = SKLabelNode(fontNamed: "Chalkduster")
+        gameScore = SKLabelNode(fontNamed: chalkDusterFont)
         gameScore.horizontalAlignmentMode = .left
         gameScore.fontSize = 48
         //adding gameScore to screen
