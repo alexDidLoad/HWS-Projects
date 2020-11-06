@@ -19,6 +19,7 @@ class GameScene: SKScene {
             gameScore.text = "Score \(score)"
         }
     }
+    var isGameEnded = false
     
     //lives
     var livesImage = [SKSpriteNode]()
@@ -92,6 +93,10 @@ class GameScene: SKScene {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        if isGameEnded {
+            return
+        }
         
         guard let touch = touches.first else { return }
         
@@ -291,6 +296,25 @@ class GameScene: SKScene {
         life.run(SKAction.scale(to: 1, duration: 0.1))
     }
     
+    func endGame(triggeredByBomb: Bool) {
+        
+        if isGameEnded {
+            return
+        }
+        
+        isGameEnded = true
+        physicsWorld.speed = 0
+        isUserInteractionEnabled = false
+        bombSoundEffect?.stop()
+        bombSoundEffect = nil
+        
+        if triggeredByBomb {
+            livesImage[0].texture = SKTexture(imageNamed: "sliceLifeGone")
+            livesImage[1].texture = SKTexture(imageNamed: "sliceLifeGone")
+            livesImage[2].texture = SKTexture(imageNamed: "sliceLifeGone")
+        }
+    }
+    
     //MARK: - Enemy methods
     
     func createEnemy(forceBomb: ForceBomb = .random) {
@@ -375,6 +399,10 @@ class GameScene: SKScene {
     }
     
     func tossEnemies() {
+        
+        if isGameEnded {
+            return
+        }
         
         popupTime *= 0.991
         chainDelay *= 0.99
