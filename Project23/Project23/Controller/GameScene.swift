@@ -107,7 +107,7 @@ class GameScene: SKScene {
         let nodesAtPoint = nodes(at: location)
         
         for case let node as SKSpriteNode in nodesAtPoint {
-            if node.name == "enemy" {
+            if node.name == enemyString {
                 //Create a particle effect over the penguin
                 if let emitter = SKEmitterNode(fileNamed: "sliceHitEnemy") {
                     emitter.position = node.position
@@ -138,8 +138,29 @@ class GameScene: SKScene {
                 //play a sound so the player knows they hit a penguin
                 run(SKAction.playSoundFileNamed("whack.caf", waitForCompletion: false))
                 
-            } else if node.name == "bomb" {
-                //destroy bomb
+            } else if node.name == bombString {
+               
+                guard let bombContainer = node.parent as? SKSpriteNode else { continue }
+                if let emitter = SKEmitterNode(fileNamed: "sliceHitBomb") {
+                    emitter.position = bombContainer.position
+                    addChild(emitter)
+                }
+                node.name = ""
+                node.physicsBody?.isDynamic = false
+                
+                let scaleOut = SKAction.scale(to: 0.001, duration: 0.2)
+                let fadeOut = SKAction.fadeOut(withDuration: 0.2)
+                let actionGroup = SKAction.group([scaleOut,fadeOut])
+                let seq = SKAction.sequence([actionGroup, .removeFromParent()])
+                
+                bombContainer.run(seq)
+                
+                if let index = activeEnemies.firstIndex(of: bombContainer) {
+                    activeEnemies.remove(at: index)
+                }
+                
+                run(SKAction.playSoundFileNamed("explosion.caf", waitForCompletion: false))
+                endGame(triggeredByBomb: true)
             }
         }
         
