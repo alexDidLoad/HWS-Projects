@@ -121,4 +121,45 @@ attributedString2.addAttribute(.font, value: UIFont.systemFont(ofSize: 24), rang
 attributedString2.addAttribute(.font, value: UIFont.systemFont(ofSize: 32), range: NSRange(location: 10, length: 4))
 attributedString2.addAttribute(.font, value: UIFont.systemFont(ofSize: 40), range: NSRange(location: 15, length: 6))
 
+//MARK: - Hacking with Swift Challenges
 
+/* 1. */
+
+extension String {
+    
+    func withPrefix(_ prefix: String) -> String {
+        if self.contains(prefix) { return self } else { return prefix + self}
+    }
+}
+
+//test 1.
+print("pet".withPrefix("car"))
+
+/* 2. */
+
+extension String {
+    
+    func isNumeric() -> Bool {
+        
+        for i in self {
+            let char = String(i)
+            if Double(char) != nil { return true }
+        }
+        return false
+    }
+}
+
+let testString = "the homies are going to be here at 4 am"
+testString.isNumeric()
+
+/* 3. */
+
+extension String {
+   
+    var lines: [String.SubSequence] {self.split(separator: "\n")
+        
+    }
+}
+
+
+print("this\nis\na\ntest".lines)
