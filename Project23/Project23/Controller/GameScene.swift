@@ -285,7 +285,7 @@ class GameScene: SKScene {
         } else if lives == 1 {
             life = livesImage[1]
         } else {
-            life = livesImage[3]
+            life = livesImage[2]
             endGame(triggeredByBomb: false)
         }
         
@@ -375,13 +375,13 @@ class GameScene: SKScene {
         //random X velocity
         let randomXVelocity: Int
         if randomPosition.x < 256 {
-            randomXVelocity = Int.random(in: 8...15)
+            randomXVelocity = Int.random(in: -8...15)
         } else if randomPosition.x < 512 {
-            randomXVelocity = Int.random(in: 3...5)
+            randomXVelocity = Int.random(in: -3...5)
         } else if randomPosition.x < 768 {
-            randomXVelocity = Int.random(in: 3...5)
+            randomXVelocity = Int.random(in: -3...5)
         } else {
-            randomXVelocity = Int.random(in: 24...32)
+            randomXVelocity = Int.random(in: -9...20)
         }
         
         //random Y velocity
