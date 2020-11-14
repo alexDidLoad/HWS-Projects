@@ -16,17 +16,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="1MP-Xp-11P">
-                            <size key="itemSize" width="145" height="145"/>
+                            <size key="itemSize" width="145" height="144"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="10"/>
+                            <inset key="sectionInset" minX="30" minY="15" maxX="30" maxY="15"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ImageView" id="zS3-dD-gOc">
-                                <rect key="frame" x="10" y="10" width="145" height="145"/>
+                                <rect key="frame" x="30" y="15" width="145" height="144"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                    <rect key="frame" x="0.0" y="0.0" width="145" height="145"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="145" height="144"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="1000" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gTw-F0-k8P">
@@ -39,12 +39,14 @@
                                     </subviews>
                                 </view>
                                 <constraints>
-                                    <constraint firstItem="gTw-F0-k8P" firstAttribute="centerX" secondItem="zS3-dD-gOc" secondAttribute="centerX" id="PBK-L2-FQ3"/>
-                                    <constraint firstItem="gTw-F0-k8P" firstAttribute="centerY" secondItem="zS3-dD-gOc" secondAttribute="centerY" id="PDA-rb-VZq"/>
+                                    <constraint firstItem="gTw-F0-k8P" firstAttribute="centerY" secondItem="zS3-dD-gOc" secondAttribute="centerY" id="I52-Ib-egz"/>
+                                    <constraint firstItem="gTw-F0-k8P" firstAttribute="centerX" secondItem="zS3-dD-gOc" secondAttribute="centerX" id="TZC-dk-NNy"/>
+                                    <constraint firstAttribute="bottomMargin" secondItem="gTw-F0-k8P" secondAttribute="bottom" constant="-8" id="akp-Yp-Vpo"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="gTw-F0-k8P" secondAttribute="trailing" constant="-8" id="e4Z-2T-OsP"/>
                                     <constraint firstItem="gTw-F0-k8P" firstAttribute="leading" secondItem="zS3-dD-gOc" secondAttribute="leadingMargin" constant="-8" id="lri-Zb-cdo"/>
                                     <constraint firstItem="gTw-F0-k8P" firstAttribute="top" secondItem="zS3-dD-gOc" secondAttribute="topMargin" constant="-8" id="tqj-M0-fh0"/>
                                 </constraints>
-                                <size key="customSize" width="145" height="145"/>
+                                <size key="customSize" width="145" height="144"/>
                             </collectionViewCell>
                         </cells>
                         <connections>

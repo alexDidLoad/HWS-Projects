@@ -8,27 +8,38 @@
 import UIKit
 import MultipeerConnectivity
 
-class ViewController: UICollectionViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MCSessionDelegate, MCBrowserViewControllerDelegate {
-   
-
+class ViewController: UICollectionViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MCSessionDelegate, MCBrowserViewControllerDelegate, MCNearbyServiceAdvertiserDelegate {
+    
     //multipeer properties
     var peerID = MCPeerID(displayName: UIDevice.current.name)
     var mcSession: MCSession?
-    var mcAdvertiserAssistant: MCAdvertiserAssistant?
-
+    var mcNearbyServiceAdvertiser: MCNearbyServiceAdvertiser?
+    
+    //Data
     var images = [UIImage]()
-
+    
+    var toolbarButtons = [UIBarButtonItem]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Selfie Share"
+        navigationController?.isToolbarHidden = false
+        
+        let messageButton = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(messageUser))
+        let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbarButtons = [spacer, messageButton]
+        
+        toolbarItems = toolbarButtons
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showConnectionPrompt))
         
         //initializing MCSession with peerID and encryption option
         mcSession = MCSession(peer: peerID, securityIdentity: nil, encryptionPreference: .required)
         mcSession?.delegate = self
+        
     }
+    
     
     //MARK: - Collection View Methods
     
@@ -80,8 +91,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         }
     }
     
-    //MARK: - Obj-c methods
-
+    //MARK: - ButtonItem methods
+    
     @objc func importPicture() {
         
         let picker = UIImagePickerController()
@@ -89,7 +100,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         picker.allowsEditing = true
         present(picker, animated: true)
     }
-
+    
     @objc func showConnectionPrompt() {
         
         let ac = UIAlertController(title: "Connect to others", message: nil, preferredStyle: .alert)
@@ -105,16 +116,57 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         present(ac, animated: true)
     }
     
+    @objc func messageUser() {
+        
+        let ac = UIAlertController(title: "New Message", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        
+        let send = UIAlertAction(title: "Send", style: .default) { [weak self, weak ac] action in
+            guard let message = ac?.textFields?[0].text else { return }
+            self?.convertMessage(message)
+        }
+        ac.addAction(send)
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        present(ac, animated: true)
+    }
+    
+    func convertMessage(_ message: String) {
+        
+        guard let mcSession = mcSession else { return }
+        
+        if mcSession.connectedPeers.count > 0 {
+            if message != "" {
+                let dataMessage = Data(message.utf8)
+                //send message to all peers
+                do {
+                    
+                    try mcSession.send(dataMessage, toPeers: mcSession.connectedPeers, with: .reliable)
+                    
+                } catch {
+                    
+                    let ac = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default))
+                    present(ac, animated: true)
+                }
+            }
+        }
+    }
+    
     //MARK: - Session methods
     
     func startHosting(action: UIAlertAction) {
         
-        guard let mcSession = mcSession else { return }
-        
-        mcAdvertiserAssistant = MCAdvertiserAssistant(serviceType: "hws-project25", discoveryInfo: nil, session: mcSession)
-        mcAdvertiserAssistant?.start()
-        
+        mcNearbyServiceAdvertiser = MCNearbyServiceAdvertiser(peer: peerID, discoveryInfo: nil, serviceType: "hws-project25")
+        mcNearbyServiceAdvertiser?.delegate = self
+        mcNearbyServiceAdvertiser?.startAdvertisingPeer()
     }
+    
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+        
+        invitationHandler(true, mcSession)
+    }
+    
     
     func joinSession(action: UIAlertAction) {
         
@@ -136,6 +188,14 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         @unknown default:
             print("Unknown state received: \(peerID.displayName)")
         }
+        
+        DispatchQueue.main.async { [weak self] in
+            if state == .notConnected {
+                let ac = UIAlertController(title: "\(peerID.displayName) disconnected", message: nil, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default))
+                self?.present(ac, animated: true)
+            }
+        }
     }
     
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
@@ -144,6 +204,11 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             if let image = UIImage(data: data) {
                 self?.images.insert(image, at: 0)
                 self?.collectionView.reloadData()
+            } else {
+                let message = String(decoding: data, as: UTF8.self)
+                let ac = UIAlertController(title: "\(peerID.displayName) says:", message: message, preferredStyle: .alert)
+                ac.addAction(UIAlertAction(title: "OK", style: .default))
+                self?.present(ac, animated: true)
             }
         }
     }
@@ -167,6 +232,9 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
         dismiss(animated: true)
     }
+    
+    
+    
     
     
 }
