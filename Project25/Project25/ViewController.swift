@@ -26,9 +26,13 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         title = "Selfie Share"
         navigationController?.isToolbarHidden = false
         
-        let messageButton = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(messageUser))
+      
+        let messageButton = UIBarButtonItem(barButtonSystemItem: .compose, target: self, action: #selector(messageUsers))
+        let infoButton = UIButton(type: .infoLight)
+        infoButton.addTarget(self, action: #selector(showUsers), for: .touchUpInside)
+        let userInfo = UIBarButtonItem(customView: infoButton)
         let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbarButtons = [spacer, messageButton]
+        toolbarButtons = [userInfo, spacer, messageButton]
         
         toolbarItems = toolbarButtons
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .camera, target: self, action: #selector(importPicture))
@@ -116,7 +120,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         present(ac, animated: true)
     }
     
-    @objc func messageUser() {
+    @objc func messageUsers() {
         
         let ac = UIAlertController(title: "New Message", message: nil, preferredStyle: .alert)
         ac.addTextField()
@@ -128,6 +132,28 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         ac.addAction(send)
         ac.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
+        present(ac, animated: true)
+    }
+    
+    @objc func showUsers() {
+        
+        guard let mcSession = mcSession else { return }
+        let ac = UIAlertController(title: "Users Connected", message: nil, preferredStyle: .actionSheet)
+        
+        if mcSession.connectedPeers.count > 0 {
+            var peers = [String]()
+            //loops through array of MCPeerID's and appends the display names to the peers array
+            for users in mcSession.connectedPeers {
+                peers.append(users.displayName)
+                //loops through the peers array and appends each peer to the message property in the UIAlertController
+                for peer in peers {
+                    ac.message = peer
+                }
+            }
+        } else {
+            ac.title = "No users are connected"
+        }
+        ac.addAction(UIAlertAction(title: "Done", style: .default))
         present(ac, animated: true)
     }
     
