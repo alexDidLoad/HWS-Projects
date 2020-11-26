@@ -23,7 +23,7 @@ class ViewController: UIViewController {
         
         currentDrawType += 1
         
-        if currentDrawType > 5 {
+        if currentDrawType > 6 {
             currentDrawType = 0
         }
         switch currentDrawType {
@@ -37,6 +37,10 @@ class ViewController: UIViewController {
             drawRotatedSquares()
         case 4:
             drawLines()
+        case 5:
+            drawImagesAndText()
+        case 6:
+            drawTestFunction()
         default:
             break
         }
@@ -150,6 +154,42 @@ class ViewController: UIViewController {
         }
         imageView.image = img
     }
+    
+    //MARK: - Draw Images and Text
+    
+    func drawImagesAndText() {
+        
+        // 1.
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 512, height: 512))
+        let img = renderer.image { ctx in
+            // 2.
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
+            // 3.
+            let attributes: [NSAttributedString.Key : Any] = [
+                .font : UIFont.systemFont(ofSize: 36),
+                .paragraphStyle : paragraphStyle
+            ]
+            // 4.
+            let string = "The best-laid schemes o'\nmice an' men gang aft agly"
+            let attributedString = NSAttributedString(string: string, attributes: attributes)
+            // 5.
+            attributedString.draw(with: CGRect(x: 32, y: 32, width: 448, height: 448), options: .usesLineFragmentOrigin, context: nil)
+            // 5.
+            let mouse = UIImage(named: "mouse")
+            mouse?.draw(at: CGPoint(x: 165, y: 150))
+        }
+        // 6.
+        imageView.image = img
+    }
+    
+    
+    //MARK: - Test Functions Hacking with Swift Challenges
+    
+    func drawTestFunction() {
+        
+    }
+    
 }
 
 
