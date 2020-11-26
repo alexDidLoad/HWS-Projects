@@ -15,7 +15,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        drawRectangle()
+        drawTwin()
         
     }
     
@@ -23,7 +23,7 @@ class ViewController: UIViewController {
         
         currentDrawType += 1
         
-        if currentDrawType > 6 {
+        if currentDrawType > 7 {
             currentDrawType = 0
         }
         switch currentDrawType {
@@ -40,7 +40,9 @@ class ViewController: UIViewController {
         case 5:
             drawImagesAndText()
         case 6:
-            drawTestFunction()
+            drawEmoji()
+        case 7:
+            drawTwin()
         default:
             break
         }
@@ -186,8 +188,85 @@ class ViewController: UIViewController {
     
     //MARK: - Test Functions Hacking with Swift Challenges
     
-    func drawTestFunction() {
+    
+    /* Pick an emoji and create it using core graphics */
+    
+    func drawEmoji() {  // 🙂
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 512, height: 512))
         
+        let img = renderer.image { ctx in
+            let rectangle = CGRect(x: 0, y: 0, width: 512, height: 512).insetBy(dx: 5, dy: 5)
+            
+            ctx.cgContext.setFillColor(UIColor.yellow.cgColor)
+            ctx.cgContext.setStrokeColor(UIColor.black.cgColor)
+            ctx.cgContext.setLineWidth(10)
+            
+            ctx.cgContext.addEllipse(in: rectangle)
+            ctx.cgContext.drawPath(using: .fillStroke)
+            // eyes
+            ctx.cgContext.setFillColor(UIColor.black.cgColor)
+            ctx.cgContext.setStrokeColor(UIColor.black.cgColor)
+            
+            let eyeRect1 = CGRect(x: 128, y: 170, width: 20, height: 20)
+            let eyeRect2 = CGRect(x: 384, y: 170, width: 20, height: 20)
+            ctx.cgContext.addEllipse(in: eyeRect1)
+            ctx.cgContext.addEllipse(in: eyeRect2)
+            ctx.cgContext.drawPath(using: .fillStroke)
+            
+            //            ctx.cgContext.move(to: CGPoint(x: 256, y: 340))
+            //                ctx.cgContext.beginPath()
+            ctx.cgContext.addArc(center: CGPoint(x: 256, y: 220),radius: 220,  startAngle: CGFloat(2), endAngle: CGFloat(1), clockwise: true)
+            ctx.cgContext.drawPath(using: .stroke)
+        }
+        
+        imageView.image = img
+        
+    }
+    
+    /* use a combination of move(to:) and addLine(to:) to create and stroke a path that spells "TWIN" on the canvas */
+    
+    func drawTwin() {
+        
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 512, height: 512))
+        
+        let img = renderer.image { context in
+            
+            let cx = context.cgContext
+            cx.translateBy(x: 100, y: 200)
+            cx.setStrokeColor(UIColor.black.cgColor)
+            cx.setLineWidth(10)
+            
+            // T
+            cx.move(to: CGPoint(x: 10, y: 0))
+            cx.addLine(to: CGPoint(x: 110, y: 0))
+            cx.move(to: CGPoint(x: 60, y: 0))
+            cx.addLine(to: CGPoint(x: 60, y: 100))
+            
+            //W
+            cx.move(to: CGPoint(x: 120, y: 0))
+            cx.addLine(to: CGPoint(x: 135, y: 100))
+            cx.move(to: CGPoint(x: 135, y: 100))
+            cx.addLine(to: CGPoint(x: 155, y: 0))
+            cx.move(to: CGPoint(x: 155, y: 0))
+            cx.addLine(to: CGPoint(x: 175, y: 100))
+            cx.move(to: CGPoint(x: 175, y: 100))
+            cx.addLine(to: CGPoint(x: 190, y: 0))
+            
+            //I
+            cx.move(to: CGPoint(x: 220, y: 0))
+            cx.addLine(to: CGPoint(x: 220, y: 100))
+            
+            //N
+            cx.move(to: CGPoint(x: 250, y: 100))
+            cx.addLine(to: CGPoint(x: 250, y: 0))
+            cx.move(to: CGPoint(x: 250, y: 0))
+            cx.addLine(to: CGPoint(x: 295, y: 100))
+            cx.move(to: CGPoint(x: 295, y: 100))
+            cx.addLine(to: CGPoint(x: 295, y: 0))
+            
+            cx.drawPath(using: .fillStroke)
+        }
+        imageView.image = img
     }
     
 }
